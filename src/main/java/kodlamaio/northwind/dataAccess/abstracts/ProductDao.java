@@ -1,32 +1,54 @@
-
 package kodlamaio.northwind.dataAccess.abstracts;
 
 import kodlamaio.northwind.entities.concretes.Product;
 import kodlamaio.northwind.entities.dtos.ProductWithCategoryDto;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductDao extends JpaRepository<Product, Integer> {
 
+    @Override
+    @EntityGraph(attributePaths = "category")
+    List<Product> findAll(Sort sort);
+
+    @Override
+    @EntityGraph(attributePaths = "category")
+    Page<Product> findAll(Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = "category")
+    Optional<Product> findById(Integer id);
+
+    @EntityGraph(attributePaths = "category")
     Product getByProductName(String productName);
 
+    @EntityGraph(attributePaths = "category")
     Product getByProductNameAndCategory_CategoryId(
             String productName, int categoryId
     );
 
+    @EntityGraph(attributePaths = "category")
     List<Product> getByProductNameOrCategory_CategoryId(
             String productName, int categoryId
     );
 
+    @EntityGraph(attributePaths = "category")
     List<Product> getByCategory_CategoryIdIn(
             List<Integer> categories
     );
 
+    @EntityGraph(attributePaths = "category")
     List<Product> getByProductNameContains(String productName);
 
+    @EntityGraph(attributePaths = "category")
     List<Product> getByProductNameStartsWith(String productName);
 
     @Query("SELECT p FROM Product p WHERE p.productName = :productName AND p.category.categoryId = :categoryId")

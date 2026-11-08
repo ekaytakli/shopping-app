@@ -1,34 +1,16 @@
 package kodlamaio.northwind.core.entities;
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 @Entity
-@Data
-@Table(name="users")
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Table(name="users", uniqueConstraints=@UniqueConstraint(name="uk_users_email", columnNames="email"))
 public class User {
-    @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    @Column(name="id")
+    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
-
-    @Email
-    @NotBlank
-    @NotNull
-    @Column(name="email")
+    @Column(name="email", nullable=false, length=254)
     private String email;
-
-
-    @NotBlank
-    @NotNull
-    @Column(name="password")
+    @JsonIgnore
+    @Column(name="password", nullable=false)
     private String password;
 }
