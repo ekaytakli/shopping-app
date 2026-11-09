@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ff6b24">
+  <meta name="description" content="Northwind Market: içeceklerden atıştırmalıklara, kategoriler arasında keşfe çıkın ve alışveriş listenizi hazırlayın.">
+  <title>Northwind Market | İyi şeyler, bir arada.</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23ff6b24'/%3E%3Ctext x='10' y='29' fill='white' font-size='29' font-family='sans-serif'%3En%3C/text%3E%3C/svg%3E">
+  <link rel="preload" href="/images/market-hero.png" as="image">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <div class="announcement"><div class="container"><span>Günün küçük mutlulukları, tek bir markette.</span><span class="announcement-brand">NORTHWIND MARKET <span aria-hidden="true">✦</span></span></div></div>
+  <header class="site-header">
+    <div class="container header-main">
+      <a class="brand" href="/" aria-label="Northwind Market ana sayfa">northwind<span>market</span><i aria-hidden="true">.</i></a>
+      <form id="filters" class="header-search" role="search"><svg class="icon" aria-hidden="true"><use href="/images/icons.svg#search"/></svg><input id="search" name="search" type="search" maxlength="100" placeholder="Canın ne çekiyor? Ürün ara…" aria-label="Ürün adına göre ara"><button type="submit">Ara <span aria-hidden="true">→</span></button></form>
+      <div class="header-actions"><button id="open-user" class="header-action"><svg class="icon" aria-hidden="true"><use href="/images/icons.svg#user"/></svg><span>Kayıt ol</span></button><button id="open-cart" class="cart-trigger"><svg class="icon" aria-hidden="true"><use href="/images/icons.svg#bag"/></svg><span>Listem</span><span id="cart-count" class="cart-count">0</span></button></div>
+    </div>
+    <nav class="container service-nav" aria-label="Market gezinme"><a class="selected" href="#catalog"><svg class="icon" aria-hidden="true"><use href="/images/icons.svg#grid"/></svg> Market</a><a href="#categories-section">Kategoriler</a><a href="#catalog">Ürünleri keşfet</a><button id="open-product" class="manage-link"><span aria-hidden="true">＋</span> Ürün ekle</button></nav>
+  </header>
+  <main id="main" class="container">
+    <div class="breadcrumb"><a href="/">Ana sayfa</a><span aria-hidden="true">›</span><span>Market</span></div>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy"><div class="hero-eyebrow"><span aria-hidden="true">✦</span> HER GÜNE BİRAZ İYİLİK</div><h1 id="hero-title">İyi şeyler,<br>bir <span>arada.</span></h1><p>Mutfağının vazgeçilmezleri, yeni lezzetler ve<br class="desktop-break"> küçük kaçamaklar. Hepsi Northwind'de.</p><a class="button primary hero-button" href="#catalog">Alışverişe göz at <span aria-hidden="true">↗</span></a><div class="hero-bottom"><span class="hero-avatars" aria-hidden="true"><span>🍊</span><span>🥑</span><span>🥖</span></span><span>Birbirinden farklı lezzetleri keşfet.</span></div></div>
+      <div class="hero-visual"><div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div><span class="hero-spark spark-one" aria-hidden="true">✳</span><span class="hero-spark spark-two" aria-hidden="true">✧</span><img src="/images/market-hero.png" alt="Sebzeler, meyveler, süt ve ekmekle dolu turuncu market çantası" width="1254" height="1254" fetchpriority="high"><div class="hero-sticker"><span aria-hidden="true">♥</span> Güzel bir güne<br><strong>güzel bir sepet.</strong></div></div>
+    </section>
+    <section id="categories-section" class="categories-section" aria-labelledby="categories-title"><div class="section-heading"><div><p class="eyebrow">NE ARAMIŞTIN?</p><h2 id="categories-title">Reyon reyon mutluluk</h2></div><a class="subtle-link" href="#catalog">Tüm ürünlere göz at <span aria-hidden="true">→</span></a></div><div id="category-tiles" class="category-tiles" aria-label="Ürün kategorileri"><p class="muted">Kategoriler yükleniyor…</p></div></section>
+    <section class="discovery-banners" aria-label="Katalog keşfi"><a class="discovery-card breakfast" href="#categories-section"><div><span class="mini-label">GÜNE GÜZEL BAŞLA</span><h3>Kahvaltının<br>keyfi başka.</h3><span class="banner-link">Reyonları keşfet <span aria-hidden="true">→</span></span></div><svg class="discovery-art" aria-hidden="true"><use href="/images/groceries.svg#dairy"/></svg><span class="banner-decoration" aria-hidden="true">✧</span></a><a class="discovery-card treat" href="#catalog"><div><span class="mini-label">KENDİNE BİR MOLA VER</span><h3>Küçük bir kaçamak,<br>kocaman mutluluk.</h3><span class="banner-link">Ürünlere göz at <span aria-hidden="true">→</span></span></div><svg class="discovery-art" aria-hidden="true"><use href="/images/groceries.svg#sweets"/></svg><span class="banner-decoration" aria-hidden="true">✳</span></a></section>
+    <section id="catalog" class="catalog" aria-labelledby="catalog-title">
+      <div class="section-heading catalog-heading"><div><p class="eyebrow">SEPETİNE YAKIŞACAK</p><h2 id="catalog-title">Marketten seçtiklerin <span id="catalog-count" class="count-pill">—</span></h2><p class="section-description" id="catalog-description">Kataloğu keşfet, favori lezzetlerini listene ekle.</p></div><button id="refresh" class="button secondary"><svg class="icon" aria-hidden="true"><use href="/images/icons.svg#refresh"/></svg> Yenile</button></div>
+      <div class="catalog-toolbar"><div class="filter-group"><svg class="icon" aria-hidden="true"><use href="/images/icons.svg#filter"/></svg><label class="sr-only" for="category-filter">Kategori</label><select id="category-filter"><option value="">Tüm kategoriler</option></select><button class="text-button" type="button" id="clear-filters" hidden>Filtreleri temizle ×</button></div><p class="illustration-note">Görseller kategorileri temsil eder.</p></div>
+      <div id="list-error" class="banner error" role="alert" hidden></div>
+      <div id="table-region" class="products-region" aria-busy="true"><div id="products-body" class="product-grid"></div><div class="empty-state" id="list-state" role="status"><svg class="empty-icon" aria-hidden="true"><use href="/images/icons.svg#bag"/></svg><h3 id="state-title">Market hazırlanıyor</h3><p id="state-description">Ürünler yükleniyor…</p></div></div>
+      <footer class="catalog-footer"><p id="page-summary" role="status">Ürünler yükleniyor…</p><div class="pagination"><label for="page-size">Sayfada</label><select id="page-size"><option value="10">10</option><option value="20">20</option><option value="50">50</option></select><button class="icon-button" id="previous" aria-label="Önceki sayfa" disabled>←</button><span id="page-label">1 / 1</span><button class="icon-button" id="next" aria-label="Sonraki sayfa" disabled>→</button></div></footer>
+    </section>
+    <section class="bottom-callout"><div class="callout-icon" aria-hidden="true">✳</div><div><h2>İyi bir mutfak, iyi seçimlerle başlar.</h2><p>İçecekten atıştırmalığa, alışveriş listeni kendi zevkine göre hazırla.</p></div><a href="#categories-section" class="button secondary">Kategorileri keşfet <span aria-hidden="true">↗</span></a></section>
+  </main>
+  <footer class="site-footer"><div class="container footer-main"><a class="brand footer-brand" href="/">northwind<span>market</span><i aria-hidden="true">.</i></a><p>Her günün içinde, iyi bir şey var.</p><a href="#main">Yukarı dön ↑</a></div><div class="container footer-bottom"><span>Northwind Market · Ürün keşif ve alışveriş listesi</span><span>Sipariş, ödeme ve teslimat hizmeti sunulmaz.</span></div></footer>
+  <dialog id="cart-dialog" class="cart-dialog" aria-labelledby="cart-title"><div class="dialog-heading"><div><p class="eyebrow">SANA ÖZEL SEÇİMLER</p><h2 id="cart-title">Alışveriş listem <span aria-hidden="true">🛍</span></h2></div><button class="icon-button" type="button" data-close aria-label="Pencereyi kapat">×</button></div><p class="dialog-description">Listeni bu tarayıcıda saklıyoruz. Ürün eklemek stok ayırmaz veya sipariş oluşturmaz.</p><div id="cart-items"></div><div class="cart-summary"><span>Liste toplamı</span><strong id="cart-total">0,00</strong></div><p class="cart-disclaimer">Katalog fiyatlarına göre hesaplanır. Para birimi belirtilmemiştir.</p><button class="button primary cart-continue" type="button" data-close>Keşfetmeye devam et <span aria-hidden="true">→</span></button></dialog>
+  <dialog id="product-dialog" aria-labelledby="product-dialog-title">
+    <div class="dialog-heading"><div><p class="eyebrow">KATALOG</p><h2 id="product-dialog-title">Yeni ürün ekle</h2></div><button class="icon-button" type="button" data-close aria-label="Pencereyi kapat">×</button></div>
+    <p class="dialog-description">Ürün bilgilerini girin. Yıldızlı alanların doldurulması zorunludur.</p>
+    <form id="product-form">
+      <label for="product-name">Ürün adı *</label><input id="product-name" name="productName" required maxlength="40" placeholder="Örn. Chai"><small class="field-error" data-error="productName"></small>
+      <label for="product-category">Kategori *</label><select id="product-category" name="categoryId" required><option value="">Kategori seçin</option></select><small class="field-error" data-error="categoryId"></small>
+      <div class="form-grid"><div><label for="product-price">Birim fiyat *</label><input id="product-price" name="unitPrice" type="number" min="0" max="9999999999.99" step="0.01" required placeholder="0.00"><small class="field-error" data-error="unitPrice"></small></div><div><label for="product-stock">Stok adedi *</label><input id="product-stock" name="unitsInStock" type="number" min="0" max="32767" step="1" required placeholder="0"><small class="field-error" data-error="unitsInStock"></small></div></div>
+      <label for="product-quantity">Paket bilgisi</label><input id="product-quantity" name="quantityPerUnit" maxlength="20" placeholder="Örn. 10 kutu × 20 poşet"><small class="field-error" data-error="quantityPerUnit"></small>
+      <div class="banner error form-message" role="alert" hidden></div><div class="dialog-actions"><button type="button" class="button secondary" data-close>Vazgeç</button><button class="button primary" type="submit">Ürünü kaydet</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="user-dialog" aria-labelledby="user-dialog-title">
+    <div class="dialog-heading"><div><p class="eyebrow">KULLANICILAR</p><h2 id="user-dialog-title">Kullanıcı kaydı</h2></div><button class="icon-button" type="button" data-close aria-label="Pencereyi kapat">×</button></div>
+    <p class="dialog-description">Yeni bir kullanıcı oluşturun. Bu form kullanıcı kaydı içindir; oturum açmaz.</p>
+    <form id="user-form">
+      <label for="user-email">E-posta *</label><input id="user-email" name="email" type="email" required maxlength="254" autocomplete="email" placeholder="ad@ornek.com"><small class="field-error" data-error="email"></small>
+      <label for="user-password">Şifre *</label><input id="user-password" name="password" type="password" required minlength="8" maxlength="64" autocomplete="new-password" aria-describedby="password-help"><small id="password-help">8–64 karakter. Türkçe karakterler dahil UTF-8 uzunluğu en fazla 72 bayt.</small><small class="field-error" data-error="password"></small>
+      <div class="banner error form-message" role="alert" hidden></div><div class="dialog-actions"><button type="button" class="button secondary" data-close>Vazgeç</button><button class="button primary" type="submit">Kullanıcı oluştur</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="detail-dialog" aria-labelledby="detail-title"><div class="dialog-heading"><div><p class="eyebrow">ÜRÜN DETAYI</p><h2 id="detail-title">Ürün bilgileri</h2></div><button class="icon-button" type="button" data-close aria-label="Pencereyi kapat">×</button></div><div id="detail-content" aria-live="polite"></div></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>

@@ -1,6 +1,7 @@
-# Northwind Backend
+# Northwind
 
-Java 17+, Spring Boot, Spring Data JPA ve PostgreSQL ile ürün ve kullanıcı kayıt API'si.
+Java 17+, Spring Boot, Spring Data JPA ve PostgreSQL ile ürün ve kullanıcı kayıt API'si;
+aynı uygulamadan sunulan, Türkçe ve mobil uyumlu Northwind Market vitrini.
 
 ## Çalıştırma
 
@@ -18,6 +19,51 @@ Geliştirmede varsayılan şema modu `update`; üretim profilinde `validate`.
 
 Geliştirme API belgeleri: `http://localhost:8080/swagger-ui.html`.
 
+## Frontend
+
+Uygulama çalıştıktan sonra `http://localhost:8080` adresini açın.
+Frontend, Spring Boot tarafından `src/main/resources/static` klasöründen sunulur.
+Ayrı bir frontend sunucusu, npm kurulumu veya CORS yapılandırması gerekmez.
+HTML dosyasını doğrudan `file://` ile açmak yerine uygulama adresini kullanın.
+
+- Ürün kataloğu: sayfalama, sayfa boyutu seçimi, ürün adına göre arama ve kategori filtresi.
+  Ürün adı aramaları büyük/küçük harfe duyarsızdır (`Chai`, `chai`, `CHAI` eşleşir).
+  Aramada `i`, `İ`, `ı`, `I` eşdeğer kabul edilir; kayıtlı ürün adları değiştirilmez.
+- Market vitrini: turuncu/mor tema, market görseli, kategori reyonları ve ürün kartları.
+- Ürün detayı: ürün adına veya kartın görseline tıklayın.
+- Alışveriş listesi: ürün kartındaki `+` düğmesiyle ekleyin; `Listem` penceresinde
+  adet artırın/azaltın ve toplamı görün. Adet sıfıra inince ürün listeden çıkar.
+  Liste bu tarayıcının `localStorage` alanında tutulur; depolama kapalıysa bellekte çalışır.
+  Miktarlar son alınan stokla sınırlıdır. Liste stok ayırmaz, sipariş veya ödeme oluşturmaz;
+  saklanan fiyat ve stok verileri katalogdan eklendiği ana aittir.
+- Yeni ürün: formdaki kategoriler `GET /api/categories` üzerinden veritabanından alınır.
+  Kullanılmayan kategoriler de listelenir. Kategori yoksa ürün kaydı kapatılır;
+  önce veritabanına kategori ekleyin. Kategori oluşturma arayüzü bulunmaz.
+- Kullanıcı kaydı: e-posta ve şifreyle kayıt yapılır; oturum açılmaz.
+- Form doğrulama, alan bazında sunucu hataları, yüklenme, boş sonuç ve tekrar deneme durumları.
+- Stok durumu ürün kartlarında gösterilir. Düşük stok eşiği 10 adettir;
+  tükenen ürünlerde listeye ekleme kapalıdır. Sonuç sayısı aktif filtrelere göre değişir.
+- Fiyatlar iki ondalık basamakla gösterilir. API para birimi tanımlamadığından simge eklenmez.
+- API ürün fotoğrafı sunmadığından kartlarda yerel, kategoriye ait temsili çizimler kullanılır.
+  Ana market görseli de projeye kaydedilmiştir; harici görsel sunucusu gerektirmez.
+
+Normal liste sunucunun sayfalı `/api/products` uç noktasını kullanır. Mevcut arama ve
+kategori uçları sayfasız liste döndürdüğünden filtrelenmiş sonuçlar tarayıcıda sıralanır,
+birlikte filtrelenir ve sayfalanır. Çok büyük kataloglarda bu uçların backend tarafında
+sayfalama desteklemesi gerekir.
+
+Frontend dosyaları:
+
+- `static/index.html`: ekranın HTML yapısı ve form pencereleri.
+- `static/css/styles.css`: görünüm, mobil düzen ve erişilebilirlik yardımcıları.
+- `static/js/api.mjs`: ortak HTTP/hata yönetimi, sorgular, filtreli sayfalama ve stok eşikleri.
+- `static/js/app.js`: ekran durumu, DOM oluşturma, formlar ve kullanıcı etkileşimleri.
+- `static/js/cart.mjs`: alışveriş listesi, stok sınırları, yerel kayıt doğrulaması ve kategori görsel eşlemesi.
+- `static/images/`: ana görsel, kategori çizimleri ve simgeler.
+
+JavaScript modülleri doğrudan tarayıcıda çalışır. API verileri `textContent` ile eklenir.
+Şifreler tarayıcı depolamasına yazılmaz; kayıt penceresi kapanınca şifre alanı temizlenir.
+
 ## API
 
 Yanıtlar mevcut `success`, `message`, `data` yapısını kullanır.
@@ -29,6 +75,7 @@ Doğrulama hatalarının `data` alanı, alan adı -> mesaj listesi eşlemesidir.
 |---|---|---|
 | GET | /api/products?pageNo=1&pageSize=10 | Sayfalı ürünler ve toplam sayılar |
 | GET | /api/products/{id} | Tek ürün |
+| GET | /api/categories | Kimliğe göre sıralı kategori özeti |
 | POST | /api/products | Ürün oluşturma, 201 ve Location |
 | POST | /api/users | Kullanıcı oluşturma, 201 |
 | GET | /api/products/getProductWithCategoryDetails | Ürün/kategori projeksiyonu |
@@ -102,6 +149,17 @@ henüz uygulanmadı; mevcut ürün endpoint'leri anonim erişime açıktır.
 ```powershell
 .\mvnw.cmd test
 ```
+
+Frontend API katmanı testleri Node.js 18+ ile bağımlılıksız çalıştırılabilir:
+
+```powershell
+node --test src/test/frontend/api.test.mjs
+node --test src/test/frontend/cart.test.mjs
+```
+
+Java entegrasyon testleri kategori listesini ve frontend dosyalarının Spring tarafından
+sunulduğunu da kontrol eder. JavaScript testleri API sözleşmesi, arama/kategori birleşimi,
+sayfalama, stok eşikleri ve hata durumlarını denetler.
 
 Testler yalnızca test classpath'inde bulunan H2 bellekiçi veritabanını kullanır;
 PostgreSQL kurulumu veya DB_PASSWORD gerektirmez. HTTP -> servis -> repository

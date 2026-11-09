@@ -15,6 +15,10 @@ import java.util.Optional;
 
 public interface ProductDao extends JpaRepository<Product, Integer> {
 
+    // Fold dotted/dotless I after uppercasing so searches also work with Turkish locales.
+    String SEARCH_NAME = "replace(upper(p.productName), 'İ', 'I')";
+    String SEARCH_PARAMETER = "replace(upper(:productName), 'İ', 'I')";
+
     @Override
     @EntityGraph(attributePaths = "category")
     List<Product> findAll(Sort sort);
@@ -28,16 +32,21 @@ public interface ProductDao extends JpaRepository<Product, Integer> {
     Optional<Product> findById(Integer id);
 
     @EntityGraph(attributePaths = "category")
-    Product getByProductName(String productName);
+    @Query("SELECT p FROM Product p WHERE " + SEARCH_NAME + " = " + SEARCH_PARAMETER)
+    Product getByProductName(@Param("productName") String productName);
 
     @EntityGraph(attributePaths = "category")
+    @Query("SELECT p FROM Product p WHERE " + SEARCH_NAME + " = " + SEARCH_PARAMETER +
+            " AND p.category.categoryId = :categoryId")
     Product getByProductNameAndCategory_CategoryId(
-            String productName, int categoryId
+            @Param("productName") String productName, @Param("categoryId") int categoryId
     );
 
     @EntityGraph(attributePaths = "category")
+    @Query("SELECT p FROM Product p WHERE " + SEARCH_NAME + " = " + SEARCH_PARAMETER +
+            " OR p.category.categoryId = :categoryId")
     List<Product> getByProductNameOrCategory_CategoryId(
-            String productName, int categoryId
+            @Param("productName") String productName, @Param("categoryId") int categoryId
     );
 
     @EntityGraph(attributePaths = "category")
@@ -46,12 +55,15 @@ public interface ProductDao extends JpaRepository<Product, Integer> {
     );
 
     @EntityGraph(attributePaths = "category")
-    List<Product> getByProductNameContains(String productName);
+    @Query("SELECT p FROM Product p WHERE locate(" + SEARCH_PARAMETER + ", " + SEARCH_NAME + ") > 0")
+    List<Product> getByProductNameContains(@Param("productName") String productName);
 
     @EntityGraph(attributePaths = "category")
-    List<Product> getByProductNameStartsWith(String productName);
+    @Query("SELECT p FROM Product p WHERE locate(" + SEARCH_PARAMETER + ", " + SEARCH_NAME + ") = 1")
+    List<Product> getByProductNameStartsWith(@Param("productName") String productName);
 
-    @Query("SELECT p FROM Product p WHERE p.productName = :productName AND p.category.categoryId = :categoryId")
+    @Query("SELECT p FROM Product p WHERE " + SEARCH_NAME + " = " + SEARCH_PARAMETER +
+            " AND p.category.categoryId = :categoryId")
     List<Product> getByNameAndCategory(
             @Param("productName") String productName,
             @Param("categoryId") int categoryId

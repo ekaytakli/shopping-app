@@ -50,6 +50,45 @@ class BackendIntegrationTests {
     }
 
     @Test
+    void categoriesIncludeUnusedCategoriesAndExposeOnlySummaryFields() throws Exception {
+        categoryDao.saveAndFlush(new Category(2, "Food", null));
+        mvc.perform(get("/api/categories"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.length()").value(2))
+            .andExpect(jsonPath("$.data[0].categoryId").value(1))
+            .andExpect(jsonPath("$.data[1].categoryName").value("Food"))
+            .andExpect(jsonPath("$.data[0].products").doesNotExist());
+    }
+
+    @Test
+    void frontendAndModuleAssetsAreServedBySpring() throws Exception {
+        mvc.perform(get("/"))
+            .andExpect(status().isOk())
+            .andExpect(forwardedUrl("index.html"));
+        mvc.perform(get("/index.html"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(org.hamcrest.Matchers.containsString("lang=\"tr\"")));
+        mvc.perform(get("/js/app.js")).andExpect(status().isOk());
+        mvc.perform(get("/js/api.mjs"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Content-Type", org.hamcrest.Matchers.containsString("javascript")));
+        mvc.perform(get("/js/cart.mjs"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Content-Type", org.hamcrest.Matchers.containsString("javascript")));
+        mvc.perform(get("/images/groceries.svg"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith("image/svg+xml"));
+        mvc.perform(get("/images/icons.svg")).andExpect(status().isOk());
+        mvc.perform(get("/images/market-hero.png"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith("image/png"));
+        mvc.perform(get("/css/styles.css"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith("text/css"));
+    }
+
+    @Test
     void registrationHashesPasswordAndNeverReturnsIt() throws Exception {
         mvc.perform(post("/api/users/add").contentType(MediaType.APPLICATION_JSON)
             .content("""
@@ -173,6 +212,75 @@ class BackendIntegrationTests {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.length()").value(2))
             .andExpect(jsonPath("$.data[0].categoryName").value("İçecekler"));
+    }
+
+    @Test
+    void productNameSearchesIgnoreCaseAndPreserveStoredSpelling() throws Exception {
+        product("Chai");
+        product("Coffee");
+        for (String name : java.util.List.of("chai", "CHAI", "cHaI")) {
+            mvc.perform(get("/api/products/getByProductName").param("productName", name))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.productName").value("Chai"));
+        }
+        mvc.perform(get("/api/products/getByProductNameContains").param("productName", "HA"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.length()").value(1))
+            .andExpect(jsonPath("$.data[0].productName").value("Chai"));
+        mvc.perform(get("/api/products/getByProductNameStartsWith").param("productName", "cO"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.length()").value(1))
+            .andExpect(jsonPath("$.data[0].productName").value("Coffee"));
+    }
+
+    @Test
+    void turkishLettersAndLiteralSearchCharactersAreHandled() throws Exception {
+        product("İncir Şurubu");
+        product("Fıstık");
+        product("%_ Özel");
+        for (String name : java.util.List.of("incir şurubu", "İNCİR ŞURUBU", "INCIR ŞURUBU")) {
+            mvc.perform(get("/api/products/getByProductName").param("productName", name))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.productName").value("İncir Şurubu"));
+        }
+        mvc.perform(get("/api/products/getByProductNameContains").param("productName", "FISTIK"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.length()").value(1))
+            .andExpect(jsonPath("$.data[0].productName").value("Fıstık"));
+        mvc.perform(get("/api/products/getByProductNameStartsWith").param("productName", "incir"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.length()").value(1));
+        for (String path : java.util.List.of("getByProductNameContains", "getByProductNameStartsWith")) {
+            mvc.perform(get("/api/products/" + path).param("productName", "%_"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.length()").value(1))
+                .andExpect(jsonPath("$.data[0].productName").value("%_ Özel"));
+        }
+    }
+
+    @Test
+    void caseInsensitiveCombinedSearchesKeepCategoryConditions() throws Exception {
+        Product chai = product("Chai");
+        product("Coffee");
+        mvc.perform(get("/api/products/getByProductNameAndCategory_CategoryId")
+                .param("productName", "CHAI").param("categoryId", "1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.id").value(chai.getId()));
+        mvc.perform(get("/api/products/getByProductNameAndCategory_CategoryId")
+                .param("productName", "CHAI").param("categoryId", "999"))
+            .andExpect(status().isNotFound());
+        mvc.perform(get("/api/products/getByProductNameOrCategory_CategoryId")
+                .param("productName", "CHAI").param("categoryId", "999"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.length()").value(1))
+            .andExpect(jsonPath("$.data[0].id").value(chai.getId()));
+        mvc.perform(get("/api/products/getByProductNameOrCategory_CategoryId")
+                .param("productName", "missing").param("categoryId", "1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.length()").value(2));
+        assertThat(productDao.getByNameAndCategory("cHaI", 1))
+            .extracting(Product::getId).containsExactly(chai.getId());
+        assertThat(productDao.getByNameAndCategory("cHaI", 999)).isEmpty();
     }
 
     @Test
